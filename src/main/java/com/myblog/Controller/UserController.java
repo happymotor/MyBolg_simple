@@ -146,23 +146,6 @@ public class UserController {
         return Result.success();
      }
 
-      //用户分页列表查询接口
-      @GetMapping("/user/list")
-      public Result<PageVO<UserInfoVO>> userQueryPages( @Validated UserPageDto userPageDto){
-        return Result.success(userService.userQueryPages(userPageDto));
-      }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
