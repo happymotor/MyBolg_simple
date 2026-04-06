@@ -47,6 +47,9 @@ public class AdminUserController {
         if(status.equals(user.getStatus())){
             return Result.fail("修改状态不可以与用户当前状态一致");
         }
+        if(userId==1L){
+            return Result.fail("不可以修改root状态");
+        }
 
         user.setStatus(status);
         adminUserService.userStatusUpdate(user);
@@ -59,6 +62,7 @@ public class AdminUserController {
                                   @RequestBody @Validated UserRoleAssignDto userRoleAssignDto){
          List<Long> roleIds=userRoleAssignDto.getRoleIds();
 
+         //TODO 判断用户id是否存在
          if(userId==null){
              return Result.fail("用户id不能为空");
          }
@@ -72,16 +76,23 @@ public class AdminUserController {
          return Result.success();
     }
 
-
-
-
-
-
-
-
-
-
-
-
+     //用户删除接口
+     @DeleteMapping("/{userId}")
+     public Result userDelete(@PathVariable(name="userId") List<Long> userIds){
+        if(userIds==null||userIds.isEmpty()){
+            return Result.fail("id参数不可以为空");
+        }
+        for(Long userId:userIds){
+            if(userId==1L){
+                return Result.fail("不可以删除root");
+            }
+            User user=adminUserService.getByUserId(userId);
+            if(user==null){
+                return Result.fail("该用户不存在");
+            }
+            adminUserService.userDelete(user);
+        }
+        return Result.success();
+     }
 
 }

@@ -108,7 +108,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, User> imp
         User user=getByUserId(userId);
         //千万不可以用user.setRoles(null);
         user.getRoles().clear();
-        
+
         //删除用户角色表中该用户的原数据
         userRoleService.remove(
                 new LambdaQueryWrapper<UserRole>()
@@ -126,6 +126,14 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, User> imp
         }
         //更新用户中role信息
         updateById(user);
+    }
+
+    @Override
+    public void userDelete(User user) {
+        user.setIsDeleted(Boolean.TRUE);
+        //逻辑删除，所以不用真正的删除，只需要更改用户属性is_deleted
+        userService.updateById(user);
+        tokenRedisService.addAllTokensToBlackList(user.getUserId());
     }
 
 }

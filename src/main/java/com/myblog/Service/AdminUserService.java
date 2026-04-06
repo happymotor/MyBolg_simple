@@ -25,4 +25,7 @@ public interface AdminUserService extends IService<User> {
 
     //用户角色分配
     void userRoleAssign(Long userId, List<Long> roleIds);
+
+    //删除用户
+    void userDelete(User user);
 }

@@ -105,7 +105,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         String newAccessToken = JwtUtil.generateAccessToken(claims);
 
         //把用户当前的刷新得到的accessToken存入reids中便于后续管理
-        Long userId= (Long) claims.get("userId");
+        //ps:当 userId 数值在 Integer 范围（-2147483648 ~ 2147483647）内时，
+        // claims.get("userId") 返回的是 Integer 类型,不能直接把Integer强制转换成是Long
+        Long userId= ((Number)claims.get("userId")).longValue();
         tokenRedisService.saveAccessToken(userId,newAccessToken);
 
         return new UserTokenVO(newAccessToken,refreshToken);
@@ -118,6 +120,5 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         String accessToken=request.getHeader("Authorization").substring(7);
         tokenRedisService.addTokenToBlackList(accessToken);
     }
-
 
 }

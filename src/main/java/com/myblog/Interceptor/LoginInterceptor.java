@@ -1,5 +1,6 @@
 package com.myblog.Interceptor;
 
+import cn.hutool.json.JSONUtil;
 import com.myblog.Utils.JwtUtil;
 import com.myblog.Common.RedisPrefixConstants;
 import com.myblog.Utils.ThreadLocalUtil;
@@ -29,6 +30,13 @@ public class LoginInterceptor implements HandlerInterceptor {
         try{
             //没有请求头或者token格式不对
             if(authHeader==null||!authHeader.startsWith("Bearer ")){
+                response.setStatus(401);
+                response.setContentType("application/json;charset=UTF-8");
+                String responseJson= JSONUtil.createObj()
+                        .set("code",401)
+                        .set("msg","jwt令牌无效")
+                        .toString();
+                response.getWriter().write(responseJson);
                 return false;
             }
 
@@ -39,6 +47,12 @@ public class LoginInterceptor implements HandlerInterceptor {
             String redisKey= RedisPrefixConstants.BLACKLIST_KEY_PREFIX+accessToken;
             if(Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))){
                 response.setStatus(401);
+                response.setContentType("application/json;charset=UTF-8");
+                String responseJson= JSONUtil.createObj()
+                        .set("code",401)
+                        .set("msg","jwt令牌已失效")
+                        .toString();
+                response.getWriter().write(responseJson);
                 return false;
             }
 
@@ -52,6 +66,12 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         }catch (Exception e){
             response.setStatus(401);
+            response.setContentType("application/json;charset=UTF-8");
+            String responseJson= JSONUtil.createObj()
+                    .set("code",401)
+                    .set("msg","jwt令牌无效")
+                    .toString();
+            response.getWriter().write(responseJson);
             //失败
             return false;
         }
