@@ -10,6 +10,7 @@ import com.myblog.pojo.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -27,6 +28,8 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+
         Map<String,Object> claims= ThreadLocalUtil.get();
         String username= claims.get("username").toString();
         User user=userService.getByUserName(username);
@@ -51,6 +54,7 @@ public class AdminInterceptor implements HandlerInterceptor {
                 .map(UserRole::getRoleId)
                 .toList();
 
+
         Boolean hasAdminRole=roleIds.contains(RoleConstants.ROLE_ID_ADMIN)
                             ||roleIds.contains(RoleConstants.ROLE_ID_ROOT);
         if(!hasAdminRole){
@@ -66,4 +70,11 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
         return true;
     }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
+        //释放线程
+        ThreadLocalUtil.remove();
+    }
+
 }

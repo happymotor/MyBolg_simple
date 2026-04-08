@@ -13,6 +13,7 @@ import com.myblog.Service.UserService;
 import com.myblog.Utils.JwtUtil;
 import com.myblog.Utils.Md5Util;
 
+import com.myblog.Utils.ThreadLocalUtil;
 import com.myblog.VO.UserInfoVO;
 import com.myblog.VO.UserLoginVO;
 import com.myblog.VO.UserTokenVO;
@@ -25,6 +26,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -57,6 +59,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         claims.put("username",user.getUsername());
         claims.put("status",user.getStatus());
         claims.put("isDeleted",user.getIsDeleted());
+
+        //将roleIds存入ThreadLocal中
+        // List<String> roles=user.getRoles(); 逻辑不对，role在数据库user表中不存在信息
+        List<Long> roleIds=userRoleService.lambdaQuery()
+                .select(UserRole::getRoleId)
+                .eq(UserRole::getUserId,user.getUserId())
+                .list()
+                .stream()
+                .map(UserRole::getRoleId)
+                .toList();
+
+        claims.put("roleIds",roleIds);
 
         //生成token
         String accessToken=JwtUtil.generateAccessToken(claims);

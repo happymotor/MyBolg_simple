@@ -38,7 +38,7 @@ public class AdminUserController {
                                    @RequestBody @Validated UserStatusUpdateDto userStatusUpdateDto){
         User user = adminUserService.getByUserId(userId);
         if(user==null){
-            return Result.fail("该userId不存在");
+            return Result.fail("该用户不存在");
         }
         Byte status = userStatusUpdateDto.getStatus();
         if(status!=0&&status!=1){
@@ -62,10 +62,14 @@ public class AdminUserController {
                                   @RequestBody @Validated UserRoleAssignDto userRoleAssignDto){
          List<Long> roleIds=userRoleAssignDto.getRoleIds();
 
-         //TODO 判断用户id是否存在
          if(userId==null){
              return Result.fail("用户id不能为空");
          }
+
+        User user = adminUserService.getByUserId(userId);
+        if(user==null){
+            return Result.fail("该用户不存在");
+        }
 
          if(roleIds.contains(1L)){
              return Result.fail("不可以分配Root角色给任意用户");
