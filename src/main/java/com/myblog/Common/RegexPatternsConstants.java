@@ -10,5 +10,12 @@ public abstract class RegexPatternsConstants {
     //栏目相关
     public static final String CATEGORY_NAME_REGEX = "^.{1,30}$";
 
+    //文章相关
+    public static final String ARTICLE_TITLE_REGEX = "^.{1,100}$";
+    public static final String ARTICLE_SUMMARY_REGEX = "^.{0,200}$";
+
+
+    //标签相关
+    public static final String TAG_NAME_REGEX = "^.{1,10}$";
 
 }
