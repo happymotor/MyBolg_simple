@@ -42,8 +42,7 @@ public class CategoryController {
     public Result<List<CategoryQueryVO>> categoryQuery(CategoryQueryDto categoryQueryDto){
         List<Long> roleIds= UserHolderUtil.getUserHolderRoleIds();
 
-        Boolean hasAdminRole=roleIds.contains(RoleConstants.ROLE_ID_ADMIN)
-                ||roleIds.contains(RoleConstants.ROLE_ID_ROOT);
+        Boolean hasAdminRole=UserHolderUtil.isAdmin();
 
         return Result.success(categoryService.categoryQuery(categoryQueryDto,hasAdminRole));
     }
